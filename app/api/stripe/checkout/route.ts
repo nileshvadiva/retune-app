@@ -9,9 +9,6 @@ const PRICE_BY_PLAN: Record<string, string | undefined> = {
   ultra: process.env.STRIPE_PRICE_ULTRA,
 };
 
-// Creates a real Stripe Checkout session. The browser is redirected to
-// Stripe's own hosted payment page — card details never touch our server,
-// which is what keeps us out of PCI-compliance scope.
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
@@ -32,9 +29,10 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
+
   const priceId = PRICE_BY_PLAN[body.plan ?? ""];
   if (!priceId) {
-    return NextResponse.json({ error: "Unknown plan. Choose 'starter' or 'pro'." }, { status: 400 });
+    return NextResponse.json({ error: "Unknown plan. Choose 'starter', 'pro', or 'ultra'." }, { status: 400 });
   }
 
   const { data: profile } = await supabase
@@ -43,25 +41,24 @@ export async function POST(request: Request) {
     .eq("id", user.id)
     .single();
 
-  // If they already have an active paid subscription, switch it in place
-  // (with proration) instead of creating a second, separate subscription —
-  // otherwise they'd be charged for BOTH plans at once.
+  // If already on a paid plan, switch in place (proration) instead of
+  // creating a second subscription — avoids double billing.
   if (profile?.stripe_subscription_id && profile.plan !== "free") {
-    const subscription = await stripe.subscriptions.retrieve(profile.stripe_subscription_id);
-    const currentItemId = subscription.items.data[0]?.id;
-
-    await stripe.subscriptions.update(profile.stripe_subscription_id, {
-      items: [{ id: currentItemId, price: priceId }],
-      proration_behavior: "create_prorations",
-    });
-    // The webhook (customer.subscription.updated) will sync the new plan
-    // into our database once Stripe confirms the change — we don't update
-    // it directly here, since the webhook is the one source of truth.
-    return NextResponse.json({ switched: true });
+    try {
+      const subscription = await stripe.subscriptions.retrieve(
+        profile.stripe_subscription_id
+      );
+      const currentItemId = subscription.items.data[0]?.id;
+      await stripe.subscriptions.update(profile.stripe_subscription_id, {
+        items: [{ id: currentItemId, price: priceId }],
+        proration_behavior: "create_prorations",
+      });
+      return NextResponse.json({ switched: true });
+    } catch {
+      // If retrieval fails, fall through to create a new checkout session.
+    }
   }
 
-  // Reuse an existing Stripe customer if we already made one, otherwise
-  // create it now and remember it — avoids duplicate customers per user.
   let customerId = profile?.stripe_customer_id;
   if (!customerId) {
     const customer = await stripe.customers.create({
@@ -69,19 +66,21 @@ export async function POST(request: Request) {
       metadata: { supabase_user_id: user.id },
     });
     customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id);
+    await supabase
+      .from("profiles")
+      .update({ stripe_customer_id: customerId })
+      .eq("id", user.id);
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const sessionParams = {
     customer: customerId,
-    mode: "subscription",
+    mode: "subscription" as const,
     line_items: [{ price: priceId, quantity: 1 }],
-    // Stripe Checkout auto-detects the customer's card country and shows
-    // the right currency/format — no per-country setup needed on our end.
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?upgraded=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?upgrade_cancelled=true`,
     metadata: { supabase_user_id: user.id, plan: body.plan },
-  });
+  };
 
+  const session = await stripe.checkout.sessions.create(sessionParams);
   return NextResponse.json({ url: session.url });
 }
