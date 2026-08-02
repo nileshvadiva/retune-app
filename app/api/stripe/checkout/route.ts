@@ -30,7 +30,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
 
-  const priceId = PRICE_BY_PLAN[body.plan ?? ""];
+  const plan = body.plan ?? "";
+  const priceId = PRICE_BY_PLAN[plan];
   if (!priceId) {
     return NextResponse.json({ error: "Unknown plan. Choose 'starter', 'pro', or 'ultra'." }, { status: 400 });
   }
@@ -72,15 +73,18 @@ export async function POST(request: Request) {
       .eq("id", user.id);
   }
 
-  const sessionParams = {
+  // Metadata values must all be strings for Stripe's type system.
+  const session = await stripe.checkout.sessions.create({
     customer: customerId,
-    mode: "subscription" as const,
+    mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?upgraded=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?upgrade_cancelled=true`,
-    metadata: { supabase_user_id: user.id, plan: body.plan },
-  };
+    metadata: {
+      supabase_user_id: user.id,
+      plan: plan, // plan is now guaranteed to be a string (not undefined)
+    },
+  });
 
-  const session = await stripe.checkout.sessions.create(sessionParams);
   return NextResponse.json({ url: session.url });
 }
