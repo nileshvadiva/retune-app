@@ -17,17 +17,18 @@ const nextConfig = {
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }, // forces HTTPS once deployed
           {
             key: "Content-Security-Policy",
-            // Only our own origin, plus Supabase (auth/data) and Stripe
-            // (checkout redirect) can be talked to from the browser.
-            // Restricts where scripts can load from and blocks the page
-            // from ever being framed by another site.
+            // Only our own origin, plus Supabase (auth/data), Cloudflare
+            // Turnstile (captcha), and payment providers can be talked to
+            // from the browser. Restricts where scripts can load from and
+            // blocks the page from ever being framed by another site.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next.js needs these for hydration in dev/build output
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com", // Next.js needs unsafe-inline/eval for hydration; Cloudflare needed for Turnstile widget
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co",
+              "frame-src https://challenges.cloudflare.com", // Turnstile renders its challenge in a hidden iframe from this origin
+              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self' https://checkout.stripe.com",
