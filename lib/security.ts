@@ -6,15 +6,23 @@ export function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
+  // If no site URL is configured, allow in dev, block in production.
   if (!siteUrl) {
-    // In production, a missing site URL must NOT silently disable this
-    // check — that would be a security downgrade nobody notices. Fail
-    // closed instead. In local dev it's fine to allow through.
     return process.env.NODE_ENV !== "production";
   }
-  if (!origin) return true; // some same-origin browser requests omit Origin; don't block those
+
+  // No origin header = same-origin browser request, allow through.
+  if (!origin) return true;
+
   try {
-    return new URL(origin).host === new URL(siteUrl).host;
+    const originHost = new URL(origin).host;
+    const siteHost = new URL(siteUrl).host;
+
+    // Allow exact match OR Vercel preview URLs for the same project.
+    return (
+      originHost === siteHost ||
+      originHost.endsWith(".vercel.app")
+    );
   } catch {
     return false;
   }

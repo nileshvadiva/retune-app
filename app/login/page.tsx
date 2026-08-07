@@ -85,6 +85,9 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           style={inputStyle}
         />
+        <p style={{ fontSize: 13, textAlign: "right", marginTop: -4, marginBottom: -4 }}>
+          <a href="/forgot-password" style={{ color: "var(--amber)" }}>Forgot password?</a>
+        </p>
         <div id="turnstile-widget" />
         <button type="submit" style={buttonStyle}>Log in</button>
       </form>
