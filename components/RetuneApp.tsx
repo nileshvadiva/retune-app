@@ -61,7 +61,7 @@ export default function RetuneApp({
   async function handleUpgrade(targetPlan: "starter" | "pro" | "ultra") {
     setStatus("Redirecting to checkout…");
     setIsError(false);
-    const res = await fetch("/api/stripe/checkout", {
+    const res = await fetch("/api/dodo/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plan: targetPlan }),
@@ -86,7 +86,7 @@ export default function RetuneApp({
   }
 
   async function handleManageSubscription() {
-    const res = await fetch("/api/stripe/portal", { method: "POST" });
+    const res = await fetch("/api/dodo/portal", { method: "POST" });
     const data = await res.json();
     if (data.url) window.location.href = data.url;
   }
