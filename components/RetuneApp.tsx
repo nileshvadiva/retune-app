@@ -172,7 +172,10 @@ export default function RetuneApp({
 
       {/* Header / dial */}
       <header style={{ textAlign: "center", marginBottom: 44 }}>
-        <div style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: 13, letterSpacing: "0.35em", color: "var(--amber)", marginBottom: 6 }}>RETUNE</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6 }}>
+  <img src="/logo.png" alt="Retune" style={{ width: 24, height: 24 }} />
+  <span style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: 13, letterSpacing: "0.35em", color: "var(--amber)" }}>RETUNE</span>
+</div>
         <h1 style={{ fontSize: "clamp(30px, 6vw, 42px)", fontWeight: 800, margin: "0 0 8px", letterSpacing: "-0.02em" }}>One recording. Every station.</h1>
         <p style={{ color: "var(--ink-dim)", fontSize: 15, marginBottom: 28 }}>Paste a transcript, tune in, get platform-native posts back.</p>
 

@@ -11,7 +11,10 @@ export default async function LandingPage() {
 
       {/* ── NAV ── */}
       <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 0" }}>
-        <div style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: 14, letterSpacing: "0.3em", color: "var(--amber)" }}>RETUNE</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+  <img src="/logo.png" alt="Retune" style={{ width: 26, height: 26 }} />
+  <span style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: 14, letterSpacing: "0.3em", color: "var(--amber)" }}>RETUNE</span>
+</div>
         <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
           <a href="/login" style={{ color: "var(--ink-dim)", fontSize: 14, textDecoration: "none" }}>Log in</a>
           <a href="/signup" className="btn-amber" style={{ background: "var(--amber)", color: "#1b1b1f", padding: "9px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
