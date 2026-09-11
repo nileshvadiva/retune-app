@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@dodopayments/nextjs": "^0.3.7",
-    "@supabase/ssr": "^0.5.1",
+    "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.45.4",
     "disposable-email-domains": "^1.0.62",
     "dodopayments": "^2.45.1",
