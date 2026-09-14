@@ -105,7 +105,7 @@ export default async function LandingPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 18 }}>
           <PriceCard name="Free" price="$0" cap="3 tunes total" note="Try before you buy" cta="Start free" href="/signup" />
           <PriceCard name="Starter" price="$19" cap="50 tunes / month" note="Perfect for weekly creators" cta="Choose Starter" href="/signup" highlight />
-          <PriceCard name="Pro" price="$39" cap="200 tunes / month" note="For daily content creators" cta="Choose Pro" href="/signup" />
+          <PriceCard name="Pro" price="$39" cap="100 tunes / month" note="For daily content creators" cta="Choose Pro" href="/signup" />
           <PriceCard name="Ultra" price="$59" cap="150 tunes / month" note="Premium AI, best quality" cta="Choose Ultra" href="/signup" />
         </div>
         <p style={{ textAlign: "center", color: "var(--ink-dim)", fontSize: 13, marginTop: 20 }}>

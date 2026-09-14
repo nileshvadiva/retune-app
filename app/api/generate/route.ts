@@ -10,7 +10,7 @@ import { isSameOrigin } from "@/lib/security";
 const LIMITS: Record<string, number> = {
   free: 3,
   starter: 50,
-  pro: 200,
+  pro: 100,
   ultra: 150,
 };
 

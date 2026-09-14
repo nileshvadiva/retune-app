@@ -148,7 +148,7 @@ Visit http://localhost:3000 — you'll be redirected to `/signup`.
     the same person can't just make endless new accounts to keep getting
     free tunes forever)
   - **Starter** — $19/month, 50 tunes/month (Sonnet)
-  - **Pro** — $39/month, 200 tunes/month (Sonnet)
+  - **Pro** — $39/month, 100 tunes/month (Sonnet)
   - **Ultra** — $59/month, 150 tunes/month, routed to **Claude Opus** instead
     of Sonnet — this is the actual product difference customers are paying
     for on this tier, not just a bigger number

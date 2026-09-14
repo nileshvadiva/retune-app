@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 // Must match LIMITS in app/api/generate/route.ts — shown here just for
 // display; the server is what actually enforces these.
-const LIMITS: Record<string, number> = { free: 3, starter: 50, pro: 200, ultra: 150 };
+const LIMITS: Record<string, number> = { free: 3, starter: 50, pro: 100, ultra: 150 };
 const PLAN_LABELS: Record<string, string> = { free: "Free", starter: "Starter", pro: "Pro", ultra: "Ultra" };
 // Must match MAX_CHARS in app/api/generate/route.ts — this is just for
 // showing the live counter early; the server enforces the real limit.
@@ -230,7 +230,7 @@ export default function RetuneApp({
                 <div className="hover-lift" style={{ background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: 12, padding: "18px 20px", minWidth: 180 }}>
                   <div style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ink-dim)", marginBottom: 6 }}>PRO</div>
                   <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>$39<span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-dim)" }}>/mo</span></div>
-                  <div style={{ fontSize: 13, color: "var(--ink-dim)", marginBottom: 14 }}>200 tunes / month</div>
+                  <div style={{ fontSize: 13, color: "var(--ink-dim)", marginBottom: 14 }}>100 tunes / month</div>
                   <button onClick={() => handleUpgrade("pro")} className="btn-ghost" style={{ width: "100%", background: "transparent", border: "1px solid var(--amber)", color: "var(--amber)", padding: "9px 16px", borderRadius: 999, fontWeight: 700, cursor: "pointer" }}>
                     Choose Pro
                   </button>
