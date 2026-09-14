@@ -15,6 +15,8 @@ const DISPOSABLE_EMAIL_DOMAINS = new Set(disposableDomains.map((d) => d.toLowerC
 // immediately without waiting on an upstream package update.
 const EXTRA_DISPOSABLE_DOMAINS = new Set<string>([
   "yzcalo.com", // confirmed disposable, missed by the "disposable-email-domains" package (Sept 2026)
+  "airhemp.com", // confirmed disposable, missed by the "disposable-email-domains" package (Sept 2026)
+  "hebase.com", // confirmed disposable, missed by BOTH the package and the Disify API's ~30k domain database (Sept 2026)
 ]);
 
 // If the maintained list ever flags a real provider you want to allow,
