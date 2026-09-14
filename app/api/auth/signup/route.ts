@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getClientIp } from "@/lib/get-client-ip";
 import { isSameOrigin } from "@/lib/security";
-import { isDisposableEmail } from "@/lib/disposable-email-domains";
+import { isDisposableEmailLive } from "@/lib/check-disposable-email";
 import { normalizeEmail } from "@/lib/normalize-email";
 
 const WINDOW_SECONDS = 24 * 60 * 60; // 24 hours
@@ -48,12 +48,17 @@ export async function POST(request: Request) {
   if (password.length < 8) {
     return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
   }
-  if (isDisposableEmail(normalizedEmail)) {
+
+  // Live check against Disify's disposable-domain database, with automatic
+  // fallback to the local list (lib/disposable-email-domains.ts) if Disify
+  // is slow or unreachable. See check-disposable-email.ts for details.
+  if (await isDisposableEmailLive(normalizedEmail)) {
     return NextResponse.json(
       { error: "Temporary/disposable email addresses aren't allowed. Please use a real email address." },
       { status: 400 }
     );
   }
+
   if (agreedToTerms !== true) {
     return NextResponse.json({ error: "You must agree to the Terms of Service and Privacy Policy." }, { status: 400 });
   }
