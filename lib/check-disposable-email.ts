@@ -18,6 +18,14 @@ export async function isDisposableEmailLive(email: string): Promise<boolean> {
   const domain = email.split("@")[1]?.toLowerCase().trim();
   if (!domain) return false;
 
+  // Check the local list FIRST, unconditionally. This is what makes manual
+  // additions (like hebase.com) actually take effect — previously this
+  // list was only consulted when the Disify call itself failed, so a
+  // domain we'd manually blocked but Disify considered "clean" slipped
+  // through anyway, because Disify's successful (if wrong) answer was
+  // returned before the local list was ever reached.
+  if (isKnownDisposableLocally(email)) return true;
+
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), DISIFY_TIMEOUT_MS);
@@ -38,7 +46,11 @@ export async function isDisposableEmailLive(email: string): Promise<boolean> {
 
     return data.disposable;
   } catch (err) {
-    console.error("Disify check failed, falling back to local list:", err);
-    return isKnownDisposableLocally(email);
+    // Disify itself failed/timed out. We already checked the local list
+    // above and it didn't match, so there's nothing further to fall back
+    // to — fail open (allow the signup) rather than blocking everyone
+    // because a third-party API had a bad moment.
+    console.error("Disify check failed:", err);
+    return false;
   }
 }
