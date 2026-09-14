@@ -1,19 +1,3 @@
-import { isDisposableEmail as isKnownDisposableLocally } from "./disposable-email-domains";
-
-const DISIFY_TIMEOUT_MS = 3000;
-
-// Disify (https://disify.com) is a free, keyless API backed by a much
-// larger and more current disposable-domain database than any static list
-// we maintain ourselves — it's the reason yzcalo.com and airhemp.com kept
-// slipping through. We check it live at signup time.
-//
-// If Disify is slow, down, or returns something unexpected, we deliberately
-// fall back to our own local list (disposable-email-domains.ts) rather than
-// either failing closed (blocking every signup because a third party had a
-// bad moment) or failing fully open (letting every disposable email through
-// during that window). The local list is smaller, but it's instant and has
-// zero external dependency, so it's the right fallback for the few minutes
-// a real outage might last.
 import { promises as dns } from "dns";
 import { isDisposableEmail as isKnownDisposableLocally } from "./disposable-email-domains";
 
@@ -57,6 +41,10 @@ async function hasKnownDisposableMx(domain: string): Promise<boolean> {
   }
 }
 
+// Disify (https://disify.com) is a free, keyless API backed by a much
+// larger and more current disposable-domain database than any static list
+// we maintain ourselves — it's the reason yzcalo.com and airhemp.com kept
+// slipping through. We check it live at signup time, as the last layer.
 export async function isDisposableEmailLive(email: string): Promise<boolean> {
   const domain = email.split("@")[1]?.toLowerCase().trim();
   if (!domain) return false;
