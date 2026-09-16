@@ -109,7 +109,16 @@ export async function POST(request: Request) {
     options: captchaToken ? { captchaToken } : undefined,
   });
   if (signUpError) {
-    return NextResponse.json({ error: signUpError.message }, { status: 400 });
+    // Fallback for a known Supabase issue: when a signup is rejected by an
+    // HTTP-based Auth Hook (like before-user-created-hook), the specific
+    // message we return from the hook doesn't always make it through —
+    // signUpError.message can come back empty, which previously showed
+    // the user a bare "{}" instead of any explanation. Always show
+    // something meaningful instead.
+    return NextResponse.json(
+      { error: signUpError.message || "This email address can't be used to sign up. Please try a different email address." },
+      { status: 400 }
+    );
   }
 
   // We already validated the IP above, before this account was created —
