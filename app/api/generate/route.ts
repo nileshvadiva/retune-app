@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/security";
+import { getClientIp } from "@/lib/get-client-ip";
 
 // Monthly generation cap per plan. Even "ultra" is intentionally NOT
 // unlimited — an unbounded plan means one heavy user's API bill could
@@ -13,6 +14,14 @@ const LIMITS: Record<string, number> = {
   pro: 100,
   ultra: 150,
 };
+
+// Caps TOTAL free-tier generations from a single IP address, regardless of
+// how many different accounts were created from that IP — closes the
+// "create N accounts, get 3 free each" multiplier. Deliberately higher
+// than the per-account limit (3) so genuine shared networks (college
+// wifi, offices, families) aren't over-blocked. Only applies to the free
+// plan — paying users aren't IP-limited.
+const MAX_FREE_GENERATIONS_PER_IP = 9;
 
 // Ultra is the only plan that gets routed to the more capable (and more
 // expensive) Opus model — this is the actual product difference customers
@@ -107,6 +116,32 @@ export async function POST(request: Request) {
     );
   }
 
+  // IP-based cap on TOTAL free generations, on top of the per-account
+  // limit above. Only applies to the free plan — this is specifically
+  // about closing the "many fake accounts from one network" abuse path,
+  // not something paying customers need to worry about.
+  const clientIp = getClientIp(request.headers);
+  if (profile.plan === "free" && clientIp !== "unknown") {
+    const { data: ipUsage, error: ipUsageError } = await supabase.rpc("get_ip_generation_usage", {
+      p_ip: clientIp,
+    });
+
+    if (ipUsageError) {
+      // Fail open on a DB hiccup rather than blocking generation for
+      // everyone because this one check errored.
+      console.error("IP generation usage check failed:", ipUsageError);
+    } else if ((ipUsage ?? 0) >= MAX_FREE_GENERATIONS_PER_IP) {
+      return NextResponse.json(
+        {
+          error:
+            "This network has reached its free-tier generation limit. If you'd like to keep going, please upgrade to a paid plan.",
+          limitReached: true,
+        },
+        { status: 402 }
+      );
+    }
+  }
+
   const prompt = `You are a social media repurposing engine. Given the raw source content below, produce platform-native derivatives.
 
 Return ONLY valid JSON, no markdown fences, no preamble, matching exactly this shape:
@@ -173,6 +208,12 @@ SOURCE CONTENT:
   });
 
   await supabase.rpc("increment_generation_usage", { p_user_id: user.id });
+
+  // Only track IP usage for free-plan users — this is what
+  // MAX_FREE_GENERATIONS_PER_IP checks against on the next request.
+  if (profile.plan === "free" && clientIp !== "unknown") {
+    await supabase.rpc("increment_ip_generation_usage", { p_ip: clientIp });
+  }
 
   return NextResponse.json({ data: parsed });
 }
