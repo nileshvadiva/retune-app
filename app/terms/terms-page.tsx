@@ -2,7 +2,7 @@ export default function TermsPage() {
   return (
     <main style={{ maxWidth: 680, margin: "0 auto", padding: "60px 20px 100px", lineHeight: 1.7 }}>
       <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>Terms of Service</h1>
-      <p style={{ color: "var(--ink-dim)", fontSize: 14, marginBottom: 40 }}>Last updated: 25/07/2026</p>
+      <p style={{ color: "var(--ink-dim)", fontSize: 14, marginBottom: 40 }}>Last updated: 17/09/2026</p>
 
       <Section title="The service">
         <p>
@@ -23,7 +23,7 @@ export default function TermsPage() {
         <ul style={listStyle}>
           <li>Paid plans (Starter, Pro, Ultra) renew automatically each month until you cancel.</li>
           <li>You can cancel anytime from your account's billing management page; you'll retain access until the end of the current billing period.</li>
-          <li>We don't offer refunds for partial months, except where required by law.</li>
+          <li>Fees already paid are non-refundable, except where required by law. This applies to all payments, not just partial billing periods.</li>
           <li>Prices may change with notice; continued use after a price change means you accept the new price.</li>
         </ul>
       </Section>
