@@ -2,14 +2,14 @@ export default function PrivacyPage() {
   return (
     <main style={{ maxWidth: 680, margin: "0 auto", padding: "60px 20px 100px", lineHeight: 1.7 }}>
       <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>Privacy Policy</h1>
-      <p style={{ color: "var(--ink-dim)", fontSize: 14, marginBottom: 40 }}>Last updated: 25/07/2026</p>
+      <p style={{ color: "var(--ink-dim)", fontSize: 14, marginBottom: 40 }}>Last updated: 17/09/2026</p>
 
       <Section title="What we collect">
         <ul style={listStyle}>
           <li>Your email address and password (password is hashed by our authentication provider, Supabase — we never see or store it in plain text).</li>
           <li>The transcripts/text you paste in to generate posts, and the generated output (LinkedIn post, Twitter thread, Reel script) — saved to your account history so you can revisit past generations.</li>
-          <li>Your IP address, held briefly, used only to prevent signup and free-tier abuse (e.g. the same person creating many accounts).</li>
-          <li>Basic payment information — but not your card details. Card numbers go directly to Stripe, our payment processor; we only receive a confirmation that payment succeeded or failed.</li>
+          <li>Your IP address. Used briefly during signup to prevent one person creating many accounts, and — for free-plan accounts only — retained to enforce a shared limit on total free generations from a given network, so that limit can't be bypassed by creating multiple accounts from the same connection. Paid accounts are not subject to this network-level check.</li>
+          <li>Basic payment information — but not your card details. Card numbers go directly to Dodo Payments, our payment processor; we only receive a confirmation that payment succeeded or failed.</li>
         </ul>
       </Section>
 
@@ -18,8 +18,10 @@ export default function PrivacyPage() {
         <ul style={listStyle}>
           <li><strong>Supabase</strong> — hosts our database and handles login/authentication.</li>
           <li><strong>Anthropic</strong> — the text you paste in is sent to Anthropic's Claude API to generate your posts. See Anthropic's own privacy policy for how they handle API data.</li>
-          <li><strong>Stripe</strong> — processes payments and stores your payment method securely; we never see full card numbers.</li>
+          <li><strong>Dodo Payments</strong> — processes payments and stores your payment method securely; we never see full card numbers.</li>
           <li><strong>Cloudflare</strong> — verifies you're not a bot during signup (Turnstile), and may see basic request metadata to do so.</li>
+          <li><strong>Resend</strong> — delivers our account emails (confirmation, password reset, receipts) on our behalf; they process your email address and message content solely to send these emails.</li>
+          <li><strong>Disify</strong> — during signup, your email address is checked against Disify's disposable-email database to block throwaway/temporary addresses. Only the email address is sent, solely for this check.</li>
         </ul>
       </Section>
 
@@ -53,10 +55,10 @@ export default function PrivacyPage() {
 
       <Section title="Emails we send">
         <p>
-          We send account-related emails (confirmation, password reset, billing receipts) —
-          these aren't optional, they're needed to run your account. If we ever add product
-          update or marketing emails, they'll include an unsubscribe link and won't be mixed
-          with account-critical emails.
+          We send account-related emails (confirmation, password reset, billing receipts),
+          delivered via our email provider, Resend — these aren't optional, they're needed to
+          run your account. If we ever add product update or marketing emails, they'll include
+          an unsubscribe link and won't be mixed with account-critical emails.
         </p>
       </Section>
 
@@ -71,7 +73,10 @@ export default function PrivacyPage() {
         <p>
           You can request a copy of your data, ask us to correct it, or ask us to delete it,
           at any time by emailing retuneapp.support@gmail.com. If you're in the EU/UK, this
-          is your right under GDPR; other regions may have similar rights under local law.
+          is your right under GDPR; other regions may have similar rights under local law. If
+          you're in India, this includes rights under the Digital Personal Data Protection Act,
+          2023 (DPDP Act) to access, correct, and request erasure of your personal data, and to
+          file a complaint with the Data Protection Board of India if needed.
         </p>
       </Section>
 
