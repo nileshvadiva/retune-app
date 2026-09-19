@@ -130,6 +130,8 @@ export default async function LandingPage() {
       {/* ── FOOTER ── */}
       <footer style={{ textAlign: "center", marginTop: 60, paddingTop: 24, borderTop: "1px solid var(--line)", color: "var(--ink-dim)", fontSize: 13 }}>
         © {new Date().getFullYear()} Retune ·{" "}
+        <a href="/faq" style={{ color: "var(--ink-dim)" }}>FAQ</a> ·{" "}
+        <a href="/why-retune" style={{ color: "var(--ink-dim)" }}>Why Retune</a> ·{" "}
         <a href="/privacy" style={{ color: "var(--ink-dim)" }}>Privacy</a> ·{" "}
         <a href="/terms" style={{ color: "var(--ink-dim)" }}>Terms</a>
       </footer>
